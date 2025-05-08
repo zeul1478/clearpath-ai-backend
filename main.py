@@ -20,7 +20,15 @@ app.add_middleware(
 
 # Load model
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model = CLIPModel.from_pretrained("openai/clip-vit-small-patch16").to(device)
+import os
+
+HF_TOKEN = os.environ.get("HUGGINGFACE_HUB_TOKEN")
+
+model = CLIPModel.from_pretrained(
+    "openai/clip-vit-base-patch32",
+    use_auth_token=HF_TOKEN
+).to(device)
+
 tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 image_processor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32", use_fast=True)
 
