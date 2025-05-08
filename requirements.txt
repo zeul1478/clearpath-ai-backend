@@ -9,9 +9,12 @@ fsspec==2025.3.2
 h11==0.16.0
 huggingface-hub==0.30.2
 idna==3.10
+Jinja2==3.1.6
+MarkupSafe==3.0.2
 numpy==2.2.5
 packaging==25.0
 pillow==11.2.1
+pydantic==2.11.4
 python-multipart==0.0.20
 regex==2024.11.6
 requests==2.32.3
