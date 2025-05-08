@@ -6,6 +6,7 @@ import torch
 from torchvision import transforms
 from transformers import CLIPModel, CLIPTokenizer, CLIPImageProcessor
 import io
+import os
 
 app = FastAPI()
 
@@ -20,17 +21,17 @@ app.add_middleware(
 
 # Load model
 device = "cuda" if torch.cuda.is_available() else "cpu"
-import os
-
 HF_TOKEN = os.environ.get("HUGGINGFACE_HUB_TOKEN")
 
+model_name = "openai/clip-vit-base-patch32"
+
 model = CLIPModel.from_pretrained(
-    "openai/clip-vit-base-patch32",
-    use_auth_token=HF_TOKEN
+    model_name,
+    token=HF_TOKEN
 ).to(device)
 
-tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-base-patch32")
-image_processor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32", use_fast=True)
+tokenizer = CLIPTokenizer.from_pretrained(model_name)
+image_processor = CLIPImageProcessor.from_pretrained(model_name, use_fast=True)
 
 # Categories
 labels = ["porn", "nude", "sexual", "violence", "normal", "self-harm", "safe"]
@@ -71,6 +72,7 @@ async def analyze_image(file: UploadFile = File(...)):
         risky_labels = ["porn", "nude", "sexual", "violence", "self-harm"]
         is_flagged = top_label in risky_labels and top_confidence >= 25
 
+        # Return the results
         return {
             "top_prediction": top_label,
             "confidence_percent": f"{top_confidence}%",
@@ -79,4 +81,5 @@ async def analyze_image(file: UploadFile = File(...)):
         }
 
     except Exception as e:
+        print(f"Error processing image: {e}")
         return {"error": str(e)}
