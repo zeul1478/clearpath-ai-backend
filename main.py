@@ -34,7 +34,15 @@ tokenizer = CLIPTokenizer.from_pretrained(model_name)
 image_processor = CLIPImageProcessor.from_pretrained(model_name, use_fast=True)
 
 # Categories
-labels = ["porn", "nude", "sexual", "violence", "normal", "self-harm", "safe"]
+labels = [
+  "an image of pornography", 
+  "an image of nudity", 
+  "sexual content", 
+  "graphic violence", 
+  "a normal safe photo", 
+  "self-harming behavior", 
+  "a completely safe image"
+]
 
 # Prepare text inputs (labels)
 text_inputs = tokenizer(labels, return_tensors="pt", padding=True).to(device)
@@ -58,6 +66,7 @@ async def analyze_image(file: UploadFile = File(...)):
         # Calculate probabilities
         logits_per_image = outputs.logits_per_image
         probs = logits_per_image.softmax(dim=1)[0]
+        print("Raw model outputs (probabilities):", probs.tolist())
 
         # Calculate percentage results
         percent_results = {
